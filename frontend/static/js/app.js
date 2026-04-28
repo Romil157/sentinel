@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. THEME TOGGLE ---
     const themeToggle = document.getElementById('themeToggle');
     const htmlEl = document.documentElement;
-    const themeIcon = themeToggle.querySelector('i');
     
     // Check saved theme or default to light
     const savedTheme = localStorage.getItem('sentinel_theme') || 'light';
@@ -59,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function setTheme(theme) {
         htmlEl.setAttribute('data-theme', theme);
-        themeIcon.setAttribute('data-lucide', theme === 'light' ? 'moon' : 'sun');
+        themeToggle.innerHTML = `<i data-lucide="${theme === 'light' ? 'moon' : 'sun'}"></i>`;
         localStorage.setItem('sentinel_theme', theme);
         lucide.createIcons();
     }
@@ -133,7 +132,10 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
-        }).then(res => res.json())
+        }).then(res => {
+            if (!res.ok) throw new Error("API Error");
+            return res.json();
+        })
           .then(data => { scanResult = data; })
           .catch(err => { scanError = err; });
 
@@ -209,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             const res = await fetch(`${API_BASE_URL}/history`);
+            if (!res.ok) throw new Error("API Error");
             const data = await res.json();
             
             tbody.innerHTML = '';
@@ -241,8 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.deleteHistory = async (id) => {
         if(!confirm("Delete this scan record?")) return;
-        await fetch(`${API_BASE_URL}/history/${id}`, { method: 'DELETE' });
-        loadHistory();
+        try {
+            const res = await fetch(`${API_BASE_URL}/history/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("API Error");
+            loadHistory();
+        } catch(e) { alert("Delete failed"); console.error(e); }
     };
 
     // --- 5. FEED MODULE ---
@@ -250,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('feedContainer');
         try {
             const res = await fetch(`${API_BASE_URL}/feed`);
+            if (!res.ok) throw new Error("API Error");
             const data = await res.json();
             
             container.innerHTML = '';
@@ -279,12 +286,14 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadAnalytics() {
         try {
             const overRes = await fetch(`${API_BASE_URL}/analytics/overview`);
+            if (!overRes.ok) throw new Error("API Error");
             const overData = await overRes.json();
             document.getElementById('statTotalScans').innerText = overData.total_scanned.toLocaleString();
             document.getElementById('statThreats').innerText = overData.threats_detected.toLocaleString();
             document.getElementById('statAccuracy').innerText = overData.accuracy_rate + '%';
             
             const trendRes = await fetch(`${API_BASE_URL}/analytics/trends`);
+            if (!trendRes.ok) throw new Error("API Error");
             const trendData = await trendRes.json();
             
             const ctx = document.getElementById('analyticsChart').getContext('2d');
@@ -309,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tbody = document.querySelector('#keysTable tbody');
         try {
             const res = await fetch(`${API_BASE_URL}/apikeys`);
+            if (!res.ok) throw new Error("API Error");
             const data = await res.json();
             
             tbody.innerHTML = '';
@@ -338,22 +348,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({name})
             });
+            if (!res.ok) throw new Error("API Error");
             const data = await res.json();
             prompt("IMPORTANT: Copy your raw API key now. You will not be able to see it again.", data.raw_key);
             loadApiKeys();
-        } catch(e) { console.error(e); }
+        } catch(e) { alert("Failed to create key"); console.error(e); }
     });
 
     window.revokeKey = async (id) => {
         if(!confirm("Revoke this API Key? Applications using it will fail.")) return;
-        await fetch(`${API_BASE_URL}/apikeys/${id}`, { method: 'DELETE' });
-        loadApiKeys();
+        try {
+            const res = await fetch(`${API_BASE_URL}/apikeys/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error("API Error");
+            loadApiKeys();
+        } catch(e) { alert("Failed to revoke key"); console.error(e); }
     };
 
     // --- 8. SETTINGS MODULE ---
     async function loadSettings() {
         try {
             const res = await fetch(`${API_BASE_URL}/settings/profile`);
+            if (!res.ok) throw new Error("API Error");
             const data = await res.json();
             
             document.getElementById('set-username').value = data.username;
@@ -369,11 +384,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         
         try {
-            await fetch(`${API_BASE_URL}/settings/profile`, {
+            const res = await fetch(`${API_BASE_URL}/settings/profile`, {
                 method: 'PUT',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify(payload)
             });
+            if (!res.ok) throw new Error("API Error");
             const msg = document.getElementById('settingsMsg');
             msg.classList.remove('d-none');
             setTimeout(() => msg.classList.add('d-none'), 3000);
