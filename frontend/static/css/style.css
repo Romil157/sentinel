@@ -1,0 +1,77 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #fafafa;
+    color: #111827;
+    line-height: 1.6;
+}
+
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+.hero-section {
+    background: linear-gradient(to bottom, #ffffff, #fafafa);
+    padding-bottom: 4rem;
+}
+
+/* Custom Pills */
+.custom-pills {
+    background-color: #f3f4f6;
+    padding: 0.25rem;
+    border-radius: 50rem;
+}
+
+.custom-pills .nav-link {
+    color: #6b7280;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-pills .nav-link.active {
+    background-color: #ffffff;
+    color: #111827;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(17, 24, 39, 0.1);
+    border-color: #d1d5db;
+}
+
+.btn-primary {
+    background-color: #111827;
+    border-color: #111827;
+}
+
+.btn-primary:hover {
+    background-color: #1f2937;
+    border-color: #1f2937;
+}
+
+.btn-dark {
+    background-color: #000000;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#resultStatus.text-danger {
+    color: #ef4444 !important;
+}
+
+#resultStatus.text-success {
+    color: #10b981 !important;
+}
+
+.explain-badge {
+    background-color: #fee2e2;
+    color: #991b1b;
+    padding: 0.35rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
