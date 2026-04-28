@@ -9,6 +9,18 @@ from app.preprocessing.url_processor import url_processor
 
 predict_bp = Blueprint('predict', __name__)
 
+def calculate_severity(confidence):
+    if confidence < 0.2:
+        return "Safe"
+    elif confidence < 0.4:
+        return "Low Risk"
+    elif confidence < 0.6:
+        return "Suspicious"
+    elif confidence < 0.8:
+        return "High Risk"
+    else:
+        return "Critical Threat"
+
 @predict_bp.route('/text', methods=['POST'])
 @limiter.limit("10 per minute")
 def predict_text():
@@ -18,15 +30,14 @@ def predict_text():
         
     text = data.get('text')
     
-    # Run prediction
-    result, confidence, explain_dict = text_processor.predict(text)
-    
-    # Save to database if needed (optional implementation)
+    confidence, explain_dict = text_processor.predict(text)
+    severity = calculate_severity(confidence)
     
     return jsonify({
         "input_type": "text",
-        "prediction": result,
-        "confidence": confidence,
+        "severity_level": severity,
+        "confidence_score": confidence,
+        "indicators": explain_dict.get("flags", []),
         "explainability": explain_dict
     }), 200
 
@@ -38,12 +49,14 @@ def predict_url():
         return jsonify({"error": "Missing url data"}), 400
         
     url = data.get('url')
-    result, confidence, explain_dict = url_processor.analyze_url(url)
+    confidence, explain_dict = url_processor.analyze_url(url)
+    severity = calculate_severity(confidence)
     
     return jsonify({
         "input_type": "url",
-        "prediction": result,
-        "confidence": confidence,
+        "severity_level": severity,
+        "confidence_score": confidence,
+        "indicators": explain_dict.get("flags", []),
         "explainability": explain_dict
     }), 200
 

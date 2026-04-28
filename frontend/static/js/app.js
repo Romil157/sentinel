@@ -2,166 +2,210 @@ const API_BASE_URL = 'http://127.0.0.1:5000/api/v1';
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // UI Elements
-    const scanTextBtn = document.getElementById('scanTextBtn');
+    // Theme Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+    const themeIcon = themeToggle.querySelector('i');
+    
+    themeToggle.addEventListener('click', () => {
+        if(htmlEl.getAttribute('data-theme') === 'light') {
+            htmlEl.setAttribute('data-theme', 'dark');
+            themeIcon.setAttribute('data-lucide', 'sun');
+        } else {
+            htmlEl.setAttribute('data-theme', 'light');
+            themeIcon.setAttribute('data-lucide', 'moon');
+        }
+        lucide.createIcons();
+    });
+
+    // Tab Switching
+    const tabBtns = document.querySelectorAll('#scanTabs button');
+    const textWrapper = document.getElementById('textInputWrapper');
+    const urlWrapper = document.getElementById('urlInputWrapper');
+    let currentMode = 'text';
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.color = 'var(--text-secondary)';
+            });
+            e.target.classList.add('active');
+            e.target.style.color = 'var(--text-primary)';
+            
+            currentMode = e.target.getAttribute('data-target');
+            if (currentMode === 'text') {
+                textWrapper.classList.remove('d-none');
+                urlWrapper.classList.add('d-none');
+            } else {
+                urlWrapper.classList.remove('d-none');
+                textWrapper.classList.add('d-none');
+            }
+        });
+    });
+
+    // Elements
+    const startScanBtn = document.getElementById('startScanBtn');
     const textInput = document.getElementById('textInput');
-    const scanUrlBtn = document.getElementById('scanUrlBtn');
     const urlInput = document.getElementById('urlInput');
     
-    const resultsSection = document.getElementById('resultsSection');
-    const resultStatus = document.getElementById('resultStatus');
-    const resultConfidence = document.getElementById('resultConfidence');
-    const explainabilityContent = document.getElementById('explainabilityContent');
+    const emptyState = document.getElementById('emptyState');
+    const progressState = document.getElementById('progressState');
+    const finalState = document.getElementById('finalState');
+    
+    const resSeverity = document.getElementById('resSeverity');
+    const resConfidence = document.getElementById('resConfidence');
+    const resIndicators = document.getElementById('resIndicators');
+    
+    const xaiBlock = document.getElementById('xaiBlock');
+    const resHeatmap = document.getElementById('resHeatmap');
 
-    // Stats Elements
-    const statTotal = document.getElementById('statTotal');
-    const statThreats = document.getElementById('statThreats');
-    const statAccuracy = document.getElementById('statAccuracy');
-
-    // Scan Text
-    scanTextBtn.addEventListener('click', async () => {
-        const text = textInput.value.trim();
-        if (!text) return alert("Please enter some text to scan.");
+    startScanBtn.addEventListener('click', async () => {
+        let payload = {};
+        let endpoint = '';
+        const rawContent = currentMode === 'text' ? textInput.value : urlInput.value;
         
-        scanTextBtn.innerText = "Analyzing...";
-        scanTextBtn.disabled = true;
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/predict/text`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-            
-            const data = await response.json();
-            displayResults(data);
-        } catch (error) {
-            console.error(error);
-            alert("Failed to connect to the analysis engine. Is the backend running?");
-        } finally {
-            scanTextBtn.innerText = "Analyze Text";
-            scanTextBtn.disabled = false;
+        if (!rawContent.trim()) {
+            return alert(`Please enter a ${currentMode} to scan.`);
         }
-    });
 
-    // Scan URL
-    scanUrlBtn.addEventListener('click', async () => {
-        const url = urlInput.value.trim();
-        if (!url) return alert("Please enter a URL to scan.");
-        
-        scanUrlBtn.innerText = "Analyzing...";
-        scanUrlBtn.disabled = true;
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/predict/url`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url })
-            });
-            
-            const data = await response.json();
-            displayResults(data);
-        } catch (error) {
-            console.error(error);
-            alert("Failed to connect to the analysis engine. Is the backend running?");
-        } finally {
-            scanUrlBtn.innerText = "Analyze URL";
-            scanUrlBtn.disabled = false;
-        }
-    });
-
-    function displayResults(data) {
-        resultsSection.classList.remove('d-none');
-        
-        const isThreat = data.prediction.includes("Scam") || data.prediction.includes("Phishing");
-        
-        resultStatus.innerText = data.prediction;
-        resultStatus.className = isThreat ? "mb-0 text-danger" : "mb-0 text-success";
-        
-        const pct = Math.round(data.confidence * 100);
-        resultConfidence.innerText = `${pct}%`;
-        resultConfidence.className = pct > 50 ? "mb-0 text-danger" : "mb-0 text-success";
-        
-        explainabilityContent.innerHTML = "";
-        
-        let tags = [];
-        if (data.explainability.keywords) tags = data.explainability.keywords;
-        if (data.explainability.flags) tags = data.explainability.flags;
-        
-        if (tags.length === 0) {
-            explainabilityContent.innerHTML = "<span class='text-muted small'>No specific suspicious indicators found.</span>";
+        if (currentMode === 'text') {
+            payload = { text: rawContent };
+            endpoint = '/predict/text';
         } else {
-            tags.forEach(tag => {
-                const badge = document.createElement('span');
-                badge.className = 'explain-badge';
-                badge.innerText = tag;
-                explainabilityContent.appendChild(badge);
-            });
+            payload = { url: rawContent };
+            endpoint = '/predict/url';
         }
-        
-        // Update mock stats for demo effect
-        updateMockStats();
-    }
 
-    function updateMockStats() {
-        let t = parseInt(statTotal.innerText.replace(/,/g, '')) || 1250;
-        let th = parseInt(statThreats.innerText.replace(/,/g, '')) || 342;
+        // Start UI Pipeline
+        startScanBtn.disabled = true;
+        emptyState.classList.add('d-none');
+        finalState.classList.add('d-none');
+        progressState.classList.remove('d-none');
         
-        statTotal.innerText = (t + 1).toLocaleString();
+        // Reset stages
+        const stages = [
+            document.getElementById('stage1'),
+            document.getElementById('stage2'),
+            document.getElementById('stage3'),
+            document.getElementById('stage4')
+        ];
         
-        if (resultStatus.innerText !== "Safe") {
-            statThreats.innerText = (th + 1).toLocaleString();
-        }
-    }
+        stages.forEach(s => {
+            s.className = 'scan-stage';
+            s.innerHTML = `<i data-lucide="circle" width="16"></i> ${s.innerText}`;
+        });
+        lucide.createIcons();
+        
+        // Fetch Data in background while animating UI
+        let scanResult = null;
+        let scanError = null;
+        
+        fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(res => res.json())
+          .then(data => { scanResult = data; })
+          .catch(err => { scanError = err; });
 
-    // Initialize Chart.js
-    const ctx = document.getElementById('threatChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Threats Blocked',
-                data: [12, 19, 15, 25, 22, 30, 28],
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
+        // Simulate Progressive Scanning Experience
+        await updateStage(stages[0]);
+        await delay(600);
+        await updateStage(stages[1]);
+        await delay(800);
+        await updateStage(stages[2]);
+        await delay(700);
+        await updateStage(stages[3]);
+        await delay(400);
+
+        progressState.classList.add('d-none');
+        startScanBtn.disabled = false;
+
+        if (scanError) {
+            emptyState.classList.remove('d-none');
+            alert("Analysis failed. Backend might be unreachable.");
+            return;
         }
+
+        if (scanResult) renderFinalResult(scanResult, rawContent);
     });
-    
-    // Load initial stats
-    fetchAnalytics();
-    
-    async function fetchAnalytics() {
-        try {
-            // Note: In real app, this needs JWT token. We fallback to mock if auth fails.
-            const response = await fetch(`${API_BASE_URL}/analytics/summary`);
-            if(response.ok) {
-                const data = await response.json();
-                statTotal.innerText = data.total_scanned.toLocaleString();
-                statThreats.innerText = data.threats_detected.toLocaleString();
-                statAccuracy.innerText = data.accuracy_rate + "%";
-            } else {
-                // Fallback demo values
-                statTotal.innerText = "1,250";
-                statThreats.innerText = "342";
-                statAccuracy.innerText = "94.2%";
-            }
-        } catch (e) {
-            statTotal.innerText = "1,250";
-            statThreats.innerText = "342";
-            statAccuracy.innerText = "94.2%";
+
+    async function updateStage(el) {
+        // Mark previous as done
+        const prev = document.querySelector('.scan-stage.active');
+        if (prev) {
+            prev.className = 'scan-stage done';
+            prev.innerHTML = `<i data-lucide="check-circle-2" width="16"></i> ${prev.innerText}`;
         }
+        // Set current to active
+        el.className = 'scan-stage active';
+        el.innerHTML = `<div class="spinner"></div> ${el.innerText}`;
+        lucide.createIcons();
+    }
+
+    function delay(ms) {
+        return new Promise(res => setTimeout(res, ms));
+    }
+
+    function renderFinalResult(data, rawInput) {
+        finalState.classList.remove('d-none');
+        
+        // Render Severity
+        resSeverity.innerText = data.severity_level;
+        resSeverity.className = 'badge-severity';
+        
+        const sevClassMap = {
+            'Safe': 'sev-safe',
+            'Low Risk': 'sev-low',
+            'Suspicious': 'sev-suspicious',
+            'High Risk': 'sev-high',
+            'Critical Threat': 'sev-critical'
+        };
+        resSeverity.classList.add(sevClassMap[data.severity_level] || 'sev-safe');
+
+        // Render Confidence
+        resConfidence.innerText = `${Math.round(data.confidence_score * 100)}%`;
+        
+        // Render Indicators
+        resIndicators.innerHTML = '';
+        if (data.indicators && data.indicators.length > 0) {
+            data.indicators.forEach(ind => {
+                const span = document.createElement('span');
+                span.className = 'indicator-tag';
+                span.innerHTML = `<i data-lucide="alert-triangle" width="14" style="color:var(--sev-suspicious-text)"></i> ${ind}`;
+                resIndicators.appendChild(span);
+            });
+        } else {
+            resIndicators.innerHTML = '<span class="text-secondary small">No anomalies detected.</span>';
+        }
+
+        // Render Heatmap (Text Only)
+        if (data.input_type === 'text' && data.explainability.keyword_heatmap) {
+            xaiBlock.classList.remove('d-none');
+            resHeatmap.innerHTML = '';
+            
+            const words = rawInput.split(/\s+/);
+            const hm = data.explainability.keyword_heatmap;
+            
+            words.forEach(w => {
+                const cleanW = w.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const span = document.createElement('span');
+                span.innerText = w + ' ';
+                
+                if (hm[cleanW]) {
+                    const heat = hm[cleanW]; // 0.0 to 1.0
+                    // Convert heat to an rgba red highlight
+                    span.style.backgroundColor = `rgba(239, 68, 68, ${heat})`;
+                    if (heat > 0.5) span.style.color = '#fff';
+                    span.className = 'heatmap-word';
+                }
+                resHeatmap.appendChild(span);
+            });
+        } else {
+            xaiBlock.classList.add('d-none');
+        }
+
+        lucide.createIcons();
     }
 });
