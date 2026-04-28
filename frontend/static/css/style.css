@@ -227,9 +227,101 @@ body {
 }
 
 /* XAI Heatmap */
-.heatmap-word {
-    padding: 0.1rem 0.3rem;
+/* View Management */
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.view-section.active {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Tables */
+.saas-table-wrapper {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.saas-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.saas-table th {
+    background-color: var(--bg-sidebar);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.saas-table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    vertical-align: middle;
+}
+.saas-table tr:last-child td {
+    border-bottom: none;
+}
+.saas-table tbody tr {
+    transition: background-color 0.2s;
+}
+.saas-table tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+[data-theme="dark"] .saas-table tbody tr:hover {
+    background-color: rgba(255,255,255,0.02);
+}
+
+/* Feed Cards */
+.feed-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.feed-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* API Key Elements */
+.api-key-box {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.btn-icon {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
     border-radius: 4px;
-    margin: 0 0.1rem;
-    display: inline-block;
+    transition: all 0.2s;
+}
+.btn-icon:hover {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+}
+[data-theme="dark"] .btn-icon:hover {
+    background-color: rgba(255,255,255,0.1);
 }

@@ -10,9 +10,10 @@ class Prediction(db.Model):
     input_type = db.Column(db.String(50), nullable=False) # 'text' or 'url'
     
     # Model results
-    prediction_result = db.Column(db.String(50), nullable=False) # 'Phishing', 'Safe', 'Scam', etc.
+    prediction_result = db.Column(db.String(50), nullable=False) # Kept for backward compat, stores "Safe" or "Phishing"
+    severity_level = db.Column(db.String(50), nullable=False, default="Unknown") # 'Safe', 'Low Risk', 'Suspicious', 'High Risk', 'Critical Threat'
     confidence_score = db.Column(db.Float, nullable=False)
-    explainability_json = db.Column(db.Text, nullable=True) # Serialized SHAP/LIME or keyword importance
+    explainability_json = db.Column(db.Text, nullable=True) # Serialized flags/indicators
     
     # Metadata
     ip_address = db.Column(db.String(100), nullable=True)
@@ -25,6 +26,7 @@ class Prediction(db.Model):
             'input_data': self.input_data,
             'input_type': self.input_type,
             'prediction_result': self.prediction_result,
+            'severity_level': self.severity_level,
             'confidence_score': self.confidence_score,
             'explainability_json': self.explainability_json,
             'created_at': self.created_at.isoformat()

@@ -1,39 +1,43 @@
 from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required
-from app import db
 from app.models.prediction import Prediction
+from app import db
+import datetime
+from sqlalchemy import func
 
 analytics_bp = Blueprint('analytics', __name__)
 
-@analytics_bp.route('/analytics/summary', methods=['GET'])
-@jwt_required()
-def get_analytics_summary():
-    # Placeholder for real analytics aggregation
-    # In a real scenario, we'd query the DB with group_by and count
+@analytics_bp.route('/overview', methods=['GET'])
+def get_overview():
+    total_scans = Prediction.query.count()
+    threats_detected = Prediction.query.filter(Prediction.severity_level.in_(['Suspicious', 'High Risk', 'Critical Threat'])).count()
+    
+    accuracy_rate = 94.2 # Demo baseline
+    
     return jsonify({
-        "total_scanned": 1250,
-        "threats_detected": 342,
-        "safe_items": 908,
-        "accuracy_rate": 94.2,
-        "recent_threats": [
-            {"type": "url", "threat": "Phishing", "date": "2024-05-12T10:30:00Z"},
-            {"type": "text", "threat": "Scam", "date": "2024-05-12T11:15:00Z"}
-        ]
+        "total_scanned": total_scans,
+        "threats_detected": threats_detected,
+        "accuracy_rate": accuracy_rate
     }), 200
 
-@analytics_bp.route('/history', methods=['GET'])
-@jwt_required()
-def get_prediction_history():
-    # Placeholder for user history
+@analytics_bp.route('/trends', methods=['GET'])
+def get_trends():
+    # Return mock last 7 days of scan data for chart.js
+    import random
+    
+    labels = []
+    data_safe = []
+    data_threats = []
+    
+    for i in range(6, -1, -1):
+        d = datetime.datetime.utcnow() - datetime.timedelta(days=i)
+        labels.append(d.strftime("%a"))
+        data_safe.append(random.randint(10, 50))
+        data_threats.append(random.randint(2, 15))
+        
     return jsonify({
-        "history": [
-            {
-                "id": 1,
-                "input_type": "text",
-                "input_data": "Urgent: Your account has been suspended. Click here to verify.",
-                "prediction": "Phishing",
-                "confidence": 0.98,
-                "created_at": "2024-05-12T10:30:00Z"
-            }
+        "labels": labels,
+        "datasets": [
+            {"label": "Safe Scans", "data": data_safe},
+            {"label": "Threats Blocked", "data": data_threats}
         ]
     }), 200

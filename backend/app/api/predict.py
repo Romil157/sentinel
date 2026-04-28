@@ -21,6 +21,24 @@ def calculate_severity(confidence):
     else:
         return "Critical Threat"
 
+def save_prediction(input_data, input_type, confidence, explain_dict, severity):
+    # Retrieve our dummy admin user (or fallback to anonymous/None)
+    from app.models.user import User
+    user = User.query.filter_by(email='admin@sentinel.com').first()
+    
+    import json
+    p = Prediction(
+        user_id=user.id if user else None,
+        input_data=input_data,
+        input_type=input_type,
+        prediction_result='Phishing' if confidence > 0.5 else 'Safe',
+        severity_level=severity,
+        confidence_score=confidence,
+        explainability_json=json.dumps(explain_dict)
+    )
+    db.session.add(p)
+    db.session.commit()
+
 @predict_bp.route('/text', methods=['POST'])
 @limiter.limit("10 per minute")
 def predict_text():
@@ -32,6 +50,8 @@ def predict_text():
     
     confidence, explain_dict = text_processor.predict(text)
     severity = calculate_severity(confidence)
+    
+    save_prediction(text, 'text', confidence, explain_dict, severity)
     
     return jsonify({
         "input_type": "text",
@@ -51,6 +71,8 @@ def predict_url():
     url = data.get('url')
     confidence, explain_dict = url_processor.analyze_url(url)
     severity = calculate_severity(confidence)
+    
+    save_prediction(url, 'url', confidence, explain_dict, severity)
     
     return jsonify({
         "input_type": "url",

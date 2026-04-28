@@ -11,8 +11,13 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
     role = db.Column(db.String(50), nullable=False, default='user')
     
+    # Settings
+    theme_preference = db.Column(db.String(20), nullable=False, default='light') # 'light', 'dark', 'system'
+    notifications_enabled = db.Column(db.Boolean, nullable=False, default=True)
+    
     # Relationships
     predictions = db.relationship('Prediction', backref='user', lazy=True)
+    api_keys = db.relationship('APIKey', backref='user', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, email, username, password, role='user'):
         self.email = email
@@ -29,5 +34,7 @@ class User(db.Model):
             'email': self.email,
             'username': self.username,
             'role': self.role,
+            'theme_preference': self.theme_preference,
+            'notifications_enabled': self.notifications_enabled,
             'created_at': self.created_at.isoformat()
         }

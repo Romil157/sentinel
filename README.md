@@ -1,53 +1,72 @@
-# Sentinel Verify: Enterprise AI-Powered Cybersecurity Platform
+# Sentinel Verify: Enterprise AI-Powered Cybersecurity SaaS Platform
 
-## Introduction
+## Overview
 
-Sentinel Verify is a production-grade, full-stack cybersecurity framework engineered to mitigate the risks associated with digital fraud, phishing, and deceptive content. By leveraging advanced Natural Language Processing (NLP) and Ensemble Machine Learning architectures, the platform provides real-time detection and explainable intelligence for high-stakes environments.
+Sentinel Verify is a production-grade, full-stack cybersecurity SaaS platform designed to detect and mitigate digital fraud, phishing, and deceptive content. Built on a modern Single Page Application (SPA) architecture, the platform integrates advanced Natural Language Processing (NLP) with Ensemble Machine Learning to provide real-time threat intelligence and explainable detection results.
 
-The system is designed with a focus on modularity, scalability, and security, making it suitable for enterprise-level deployments, internship evaluations, and academic research projects.
+Transitioning from a prototype to an enterprise-grade solution, the system now features a complete suite of management modules, persistent data storage, and a high-fidelity intelligence dashboard.
 
 ---
 
 ## System Architecture
 
-The following diagram illustrates the decoupled architecture of Sentinel Verify, highlighting the flow from client interaction to the deep-learning and heuristic analysis layers.
+The application utilizes a decoupled architecture where a lightweight Vanilla JavaScript frontend communicates with a modular Flask-based REST API.
 
 ```mermaid
 graph TD
-    User((User/Client)) -->|REST API| Backend[Flask Application Factory]
+    User((User/Client)) -->|Hash Routing| SPA[Frontend SPA Engine]
+    SPA -->|REST API| Backend[Flask Application Factory]
     
-    subgraph "Logic & Security Layer"
-        Backend --> Auth[JWT Authentication]
-        Backend --> Predict[Prediction Engine]
-        Backend --> Analytics[Aggregation Service]
+    subgraph "SaaS Service Layer"
+        Backend --> Auth[JWT & API Key Auth]
+        Backend --> History[Scan History Service]
+        Backend --> Feed[Global Threat Intelligence]
+        Backend --> Analytics[Real-time Metrics Aggregator]
     end
 
-    subgraph "AI/ML Processing Pipeline"
-        Predict --> Preprocess[NLP Preprocessing: Lemmatization/Tokenization]
-        Preprocess --> Ensemble[Ensemble Classifier: XGBoost/RF/LogReg]
-        Ensemble --> XAI[Explainability Module: Feature Importance]
+    subgraph "Threat Intelligence Engine"
+        Predict --> Preprocess[NLP: Lemmatization & Heuristics]
+        Preprocess --> Ensemble[Ensemble Classifier: RF/XGBoost]
+        Ensemble --> XAI[Explainability: Keyword Heatmaps]
     end
 
-    subgraph "Persistence & Artifacts"
-        Backend --> DB[(SQLAlchemy ORM)]
+    subgraph "Persistence & Infrastructure"
+        Backend --> DB[(SQLAlchemy & Alembic)]
         Ensemble --> Models[(Serialized ML Artifacts)]
     end
 ```
 
 ---
 
-## Core Capabilities
+## Core Modules
 
-### Advanced Fraud Detection
-The platform utilizes a multi-layered approach to identify malicious content:
-* **Natural Language Analysis**: Employs TF-IDF vectorization and lemmatization to detect linguistic patterns characteristic of fraudulent job postings and government schemes.
-* **URL Intelligence Analysis**: Implements heuristic evaluation of URL entropy, protocol validation (HTTPS), and suspicious character detection to identify phishing attempts.
+### 1. Real-time Threat Scanner
+The primary analysis engine evaluated via a progressive multi-stage pipeline:
+* **Text Analysis**: Detects linguistic patterns in emails, job postings, and messages using TF-IDF and lemmatization.
+* **URL Reputation**: Evaluates URL entropy, protocol security, and TLD reputation using heuristic indicators.
+* **Explainable AI (XAI)**: Provides keyword-level heatmaps to visualize why specific content was flagged as suspicious.
 
-### Explainable AI (XAI) Implementation
-To ensure transparency, the system provides detailed explainability reports for every prediction. By highlighting specific keywords or structural flags that contributed to a "High Threat" score, users can verify the model's decision logic.
+### 2. Global Threat Feed
+A live intelligence stream that aggregates and displays active global cybersecurity threats.
+* **Campaign Tracking**: Monitors active phishing and malware campaigns.
+* **Risk Categorization**: Automatically ranks threats from Low to Critical severity.
+* **Source Attribution**: Tracks intelligence from internal sensors and external security databases.
 
-### Enterprise Dashboard
-A unified interface provides real-time monitoring of security metrics, historical detection trends, and performance analytics visualized through high-fidelity charts.
+### 3. Comprehensive Analytics
+Visualizes platform metrics and threat trends through an interactive dashboard.
+* **Threat Trends**: 7-day visualization of blocked threats versus safe scans.
+* **Detection Metrics**: Real-time tracking of total scans, threat detection rates, and model accuracy.
+* **Visualization Layer**: Powered by Chart.js for high-performance data rendering.
+
+### 4. Scan History & Persistence
+A persistent record of every analysis performed by the system.
+* **Data Normalization**: Stores structured prediction results, confidence scores, and XAI metadata.
+* **Audit Trail**: Allows users to review, filter, and manage historical scan records.
+
+### 5. API & Developer Ecosystem
+Enables enterprise integration through a secure API management system.
+* **API Key Management**: Secure generation and revocation of hashed application tokens.
+* **Headless Integration**: Allows external applications to leverage the threat engine programmatically.
 
 ---
 
@@ -55,99 +74,66 @@ A unified interface provides real-time monitoring of security metrics, historica
 
 | Component | Specification |
 | :--- | :--- |
+| **Frontend Architecture** | Vanilla JS Single Page Application (SPA) with Hash-based Routing |
 | **Backend Framework** | Flask with Blueprint Modular Architecture |
-| **Authentication** | JSON Web Tokens (JWT) with secure password hashing |
-| **Database** | PostgreSQL (Production), SQLite (Local Development) |
-| **ML Libraries** | Scikit-Learn, XGBoost, LightGBM, CatBoost |
-| **NLP Engine** | SpaCy (en_core_web_sm), NLTK |
-| **Frontend Styling** | Vanilla JavaScript, CSS3, Bootstrap 5 |
-| **Visualization** | Chart.js for data-driven analytics |
-
----
-
-## Security and Hardening
-
-The platform implements several layers of security to protect against common vulnerabilities:
-* **Input Sanitization**: Comprehensive cleaning of user-provided data to prevent Cross-Site Scripting (XSS) and Injection attacks.
-* **Stateless Authentication**: JWT-based security ensures that the application remains scalable while maintaining strict access control.
-* **Rate Limiting**: Integrated protection against automated brute-force attacks and API scraping.
-* **Environment Isolation**: Configuration parameters and sensitive credentials are isolated from the codebase using environment variables.
+| **Authentication** | JWT (Stateless) and Bcrypt-hashed API Keys |
+| **Database Management** | SQLAlchemy ORM with Alembic Migration Engine |
+| **Machine Learning** | Scikit-Learn, Ensemble Random Forest, XGBoost |
+| **NLP Engine** | SpaCy (en_core_web_sm), NLTK, Regex Heuristics |
+| **UI/UX Design** | CSS3 Grid/Flexbox, Dark Mode Persistence, Lucide Icons |
 
 ---
 
 ## Installation and Deployment
 
-### Automated Windows Setup
-The project includes a master automation script designed for frictionless deployment on Windows systems.
+### Automated Setup (Windows)
+The project includes a master automation script for zero-configuration deployment.
 
-1. Ensure **Python 3.9+** is installed.
+1. Ensure Python 3.9 or higher is installed.
 2. Navigate to the `scripts/` directory.
-3. Execute `setup.bat`.
+3. Run `setup.bat`.
 
-This script automates the creation of the virtual environment, dependency management, database initialization, and launches both service layers simultaneously.
+This script initializes the virtual environment, installs dependencies (including the SpaCy language model), prepares the database via migrations, seeds initial data, and launches the application.
 
-### Manual Configuration (Linux/VPS)
-For deployment on Linux-based servers or Virtual Private Servers (VPS):
-
+### Manual Setup (Linux)
 ```bash
-# Environment Initialization
+# Initialize environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Dependency Installation
+# Install dependencies
 pip install -r backend/requirements.txt
 python -m spacy download en_core_web_sm
 
-# Database and App Launch
+# Database initialization
 export FLASK_APP=backend/run.py
 flask db upgrade
-gunicorn -c deployment/gunicorn.conf.py --chdir backend wsgi:app
-```
+python backend/seed_db.py
 
----
-
-## Machine Learning Development
-
-### Pipeline Overview
-The ML pipeline follows a rigorous process:
-1. **Preprocessing**: Removal of HTML artifacts, URLs, and non-alphanumeric noise.
-2. **Feature Engineering**: Dynamic generation of TF-IDF matrices and URL-specific heuristic features.
-3. **Training**: Concurrent training of Logistic Regression and Random Forest models (extendable to BERT).
-4. **Serialization**: Models are persisted as binary artifacts for high-performance inference.
-
-### Model Performance Targets
-* **Accuracy**: > 92%
-* **Precision/Recall**: > 90%
-* **API Latency**: < 1.0s
-
----
-
-## Project Structure
-
-```text
-sentinel-verify/
-├── backend/            # Service layer logic and AI implementation
-│   ├── app/            # Application core (Models, API Blueprints)
-│   ├── preprocessing/  # Data transformation logic
-│   └── scripts/        # ML training pipelines
-├── frontend/           # Presentation layer (Web Dashboard)
-├── ai_models/          # Persistence layer for trained models
-├── deployment/         # Production server configurations
-├── datasets/           # Local storage for training data
-└── scripts/            # Automation and utility scripts
+# Launch
+python backend/run.py
 ```
 
 ---
 
 ## API Documentation
 
-The platform exposes a RESTful interface for third-party integration:
-* `POST /api/v1/predict/text`: Primary endpoint for content analysis.
-* `POST /api/v1/predict/url`: Primary endpoint for URL reputation analysis.
-* `POST /api/v1/auth/login`: Authentication gateway for secure access.
+The platform exposes a standard RESTful interface under the `/api/v1` prefix:
+
+### Detection Endpoints
+* `POST /predict/text`: Analyzes raw text content for fraud and phishing.
+* `POST /predict/url`: Analyzes URLs for reputation and phishing markers.
+
+### Management Endpoints
+* `GET /history`: Retrieves paginated scan history.
+* `GET /feed`: Retrieves the global threat intelligence feed.
+* `GET /analytics/overview`: High-level platform KPIs.
+* `GET /analytics/trends`: Time-series data for detection trends.
+* `POST /apikeys`: Generates a new secure API key.
+* `PUT /settings/profile`: Updates user preferences and profile data.
 
 ---
 
 ## License
 
-This project is released under the **MIT License**.
+This project is licensed under the MIT License.

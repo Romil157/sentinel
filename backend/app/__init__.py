@@ -38,17 +38,23 @@ def create_app(config_name='dev'):
     def internal_error(error):
         return jsonify({"error": "Internal server error"}), 500
 
-    # Register blueprints (to be created next)
+    # Register Blueprints
     from app.api.health import health_bp
-    app.register_blueprint(health_bp, url_prefix='/api/v1')
-    
     from app.api.auth import auth_bp
-    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
-
     from app.api.predict import predict_bp
-    app.register_blueprint(predict_bp, url_prefix='/api/v1/predict')
-
+    from app.api.history import history_bp
+    from app.api.feed import feed_bp
     from app.api.analytics import analytics_bp
-    app.register_blueprint(analytics_bp, url_prefix='/api/v1')
+    from app.api.apikeys import apikeys_bp
+    from app.api.settings import settings_bp
+
+    app.register_blueprint(health_bp, url_prefix='/api/v1/health')
+    app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
+    app.register_blueprint(predict_bp, url_prefix='/api/v1/predict')
+    app.register_blueprint(history_bp, url_prefix='/api/v1/history')
+    app.register_blueprint(feed_bp, url_prefix='/api/v1/feed')
+    app.register_blueprint(analytics_bp, url_prefix='/api/v1/analytics')
+    app.register_blueprint(apikeys_bp, url_prefix='/api/v1/apikeys')
+    app.register_blueprint(settings_bp, url_prefix='/api/v1/settings')
 
     return app
