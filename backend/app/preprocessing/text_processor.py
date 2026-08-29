@@ -29,11 +29,12 @@ class TextProcessor:
         
         # General Urgency & Coercion Keywords (English + Hinglish)
         self.urgency_keywords = [
-            'urgent', 'immediately', 'suspended', 'locked', 'within 24 hours',
-            'action required', 'unauthorized access', 'account terminated',
+            'urgent', 'urgently', 'immediately', 'suspended', 'suspension', 'locked', 'within 24 hours',
+            'action required', 'unauthorized access', 'account terminated', 'stop supply',
             'security alert', 'final notice', 'overdue', 'deactivation', 'compromised',
             'power will be disconnected', 'disconnected tonight', 'vehicle impound',
             'court summons', 'legal action', 'police complaint', 'warrant issued',
+            'stopped tonight', 'power supply', 'tonight', 'deactivated', 'suspended notice',
             # Hinglish Urgency
             'turant', 'aaj raat', '24 ghante', 'antim avsar', 'jald se jald', 'kat diya jayega',
             'band ho jayega', 'sampark kare'
@@ -41,11 +42,11 @@ class TextProcessor:
         
         # Financial & Reward Bait (English + Hinglish)
         self.financial_keywords = [
-            'winner', 'lottery', 'claim your prize', 'bank account', 'credit card',
-            'refund', 'payment', 'bitcoin', 'crypto', 'wallet drain', 'wire transfer',
+            'winner', 'lottery', 'claim your prize', 'bank account', 'credit card', 'debit card',
+            'bank', 'banking', 'account', 'refund', 'payment', 'pay', 'bitcoin', 'crypto', 'wallet drain', 'wire transfer',
             'invoice unpaid', 'gift card', 'compensation', 'inheritance', 'cash prize',
             'pm-kisan', 'pm kisan installment', 'income tax refund', 'it refund approved',
-            'subsidy grant', 'cashback credited', 'scratch card won',
+            'subsidy grant', 'cashback credited', 'scratch card won', 'bill', 'fine', 'fee',
             # Hinglish Bait
             'inam jeeta', 'kist aa gayi', 'kist claim', 'khata block', 'shulk bhare',
             'bina shulk', 'yojana labh', 'muft'
@@ -70,12 +71,22 @@ class TextProcessor:
             'paytm', 'phonepe', 'gpay', 'irctc'
         ]
         
-        # Indian Public Service & Hinglish Scam Signatures
+        # Indian Public Service & Hinglish Scam Signatures + Account Phishing
         self.indian_scam_signatures = [
             {
-                "pattern": r"(electricity|bijli|power|connection).*(disconnect|unpaid|update bill|officer|kat diya|kat jayega|sampark)",
+                "pattern": r"(electricity|bijli|power|connection|bescom|mseb|tneb|discom|uppcl|dhbvn).*(disconnect|stopped|stop|cut|unpaid|update bill|officer|kat diya|kat jayega|sampark|pay|tonight)",
                 "flag": "Electricity Bill (Bijli Vibhag) Disconnection Scam Signature",
                 "advisory": "Electricity distribution companies never threaten same-day disconnection via random mobile SMS or personal contact numbers."
+            },
+            {
+                "pattern": r"(urgent|alert|notice|warning|immediate).*(account|banking|bank|card).*(suspend|suspension|lock|block|terminate|compromise|verify|unauthorized)",
+                "flag": "Banking / Account Suspension Coercion Threat",
+                "advisory": "Financial institutions never demand emergency action via text message or threat of immediate account suspension."
+            },
+            {
+                "pattern": r"(account|banking|bank|card).*(suspend|suspension|lock|block|terminate|compromise).*(urgent|alert|notice|warning|immediate)",
+                "flag": "Banking / Account Suspension Coercion Threat",
+                "advisory": "Financial institutions never demand emergency action via text message or threat of immediate account suspension."
             },
             {
                 "pattern": r"(echallan|challan|parivahan|traffic|gadi).*(pending|impound|fine|court|seize|bhare|jurmana)",
@@ -155,7 +166,7 @@ class TextProcessor:
         heuristic_score = 0.0
         custom_advisory = None
         
-        # 1. Check Indian Public Service & Hinglish Scam Signatures
+        # 1. Check Indian Public Service & Hinglish Scam Signatures + Phishing Patterns
         for sig in self.indian_scam_signatures:
             if re.search(sig["pattern"], lower_text, re.IGNORECASE):
                 heuristic_score += 0.50
@@ -171,23 +182,23 @@ class TextProcessor:
                 flags.append(f"Urgency indicator: '{kw}'")
                 break
                 
-        # 3. Check Financial
+        # 3. Check Financial / Banking
         for kw in self.financial_keywords:
             if kw in lower_text:
-                heuristic_score += 0.30
-                flags.append(f"Financial bait trigger: '{kw}'")
+                heuristic_score += 0.25
+                flags.append(f"Financial indicator: '{kw}'")
                 break
                 
         # 4. Check OTP/Credentials
         for pattern in self.otp_patterns:
             if re.search(pattern, raw_text, re.IGNORECASE):
-                heuristic_score += 0.40
+                heuristic_score += 0.35
                 flags.append("Credential / OTP Harvesting Pattern")
                 break
                 
         # 5. Check Brand Spoofing
         for brand in self.brand_keywords:
-            if brand in lower_text and (heuristic_score > 0.15 or 'verify' in lower_text or 'account' in lower_text or 'link' in lower_text or 'kare' in lower_text):
+            if brand in lower_text and (heuristic_score > 0.15 or 'verify' in lower_text or 'account' in lower_text or 'link' in lower_text or 'kare' in lower_text or 'dear customer' in lower_text):
                 heuristic_score += 0.20
                 flags.append(f"Targeting service / brand: '{brand.upper()}'")
                 break
