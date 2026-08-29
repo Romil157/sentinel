@@ -5,13 +5,11 @@ echo ==================================================
 echo Sentinel Verify - Environment Cleanup
 echo ==================================================
 echo.
-echo This script will remove all local environment files:
+echo This script will reset local temporary environment files:
 echo - Virtual Environment (venv)
 echo - Local Configuration (.env)
-echo - SQLite Database
-echo - Database Migrations
+echo - SQLite Database (sentinel.db)
 echo - Application Logs
-echo - Trained Model Artifacts
 echo.
 set /p confirm="Are you sure you want to proceed? (Y/N): "
 
@@ -21,53 +19,42 @@ if /i "%confirm%" neq "Y" (
     exit /b 0
 )
 
+pushd "%~dp0.."
+set "ROOT_DIR=%CD%"
+set "BACKEND_DIR=%ROOT_DIR%\backend"
+popd
+
 echo.
-echo [1/6] Removing virtual environment...
-if exist ..\backend\venv (
-    rmdir /s /q ..\backend\venv
+echo [1/4] Removing virtual environment...
+if exist "%BACKEND_DIR%\venv" (
+    rmdir /s /q "%BACKEND_DIR%\venv"
     echo Done.
 ) else (
     echo Virtual environment not found. Skipping.
 )
 
-echo [2/6] Removing local configuration (.env)...
-if exist ..\backend\.env (
-    del /f /q ..\backend\.env
+echo [2/4] Removing local configuration (.env)...
+if exist "%BACKEND_DIR%\.env" (
+    del /f /q "%BACKEND_DIR%\.env"
     echo Done.
 ) else (
     echo .env file not found. Skipping.
 )
 
-echo [3/6] Removing SQLite database...
-if exist ..\backend\sentinel.db (
-    del /f /q ..\backend\sentinel.db
+echo [3/4] Removing SQLite database...
+if exist "%BACKEND_DIR%\sentinel.db" (
+    del /f /q "%BACKEND_DIR%\sentinel.db"
     echo Done.
 ) else (
     echo Database file not found. Skipping.
 )
 
-echo [4/6] Removing database migrations...
-if exist ..\backend\migrations (
-    rmdir /s /q ..\backend\migrations
-    echo Done.
-) else (
-    echo Migrations folder not found. Skipping.
-)
-
-echo [5/6] Removing application logs...
-if exist ..\backend\logs (
-    rmdir /s /q ..\backend\logs
+echo [4/4] Removing application logs...
+if exist "%BACKEND_DIR%\logs" (
+    rmdir /s /q "%BACKEND_DIR%\logs"
     echo Done.
 ) else (
     echo Logs folder not found. Skipping.
-)
-
-echo [6/6] Removing trained model artifacts...
-if exist ..\ai_models\trained (
-    del /f /q ..\ai_models\trained\*.pkl
-    echo Done.
-) else (
-    echo Models folder not found. Skipping.
 )
 
 echo.
@@ -75,3 +62,4 @@ echo ==================================================
 echo Cleanup complete! Your environment has been reset.
 echo ==================================================
 pause
+exit /b 0

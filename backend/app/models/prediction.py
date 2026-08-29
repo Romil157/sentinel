@@ -5,19 +5,19 @@ class Prediction(db.Model):
     __tablename__ = 'predictions'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True) # Nullable for anonymous predictions
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     input_data = db.Column(db.Text, nullable=False)
     input_type = db.Column(db.String(50), nullable=False) # 'text' or 'url'
     
     # Model results
-    prediction_result = db.Column(db.String(50), nullable=False) # Kept for backward compat, stores "Safe" or "Phishing"
-    severity_level = db.Column(db.String(50), nullable=False, default="Unknown") # 'Safe', 'Low Risk', 'Suspicious', 'High Risk', 'Critical Threat'
+    prediction_result = db.Column(db.String(50), nullable=False)
+    severity_level = db.Column(db.String(50), nullable=False, default="Unknown")
     confidence_score = db.Column(db.Float, nullable=False)
-    explainability_json = db.Column(db.Text, nullable=True) # Serialized flags/indicators
+    explainability_json = db.Column(db.Text, nullable=True)
     
     # Metadata
     ip_address = db.Column(db.String(100), nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     def to_dict(self):
         return {
@@ -29,5 +29,5 @@ class Prediction(db.Model):
             'severity_level': self.severity_level,
             'confidence_score': self.confidence_score,
             'explainability_json': self.explainability_json,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }

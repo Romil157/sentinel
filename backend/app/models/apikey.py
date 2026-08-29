@@ -16,7 +16,7 @@ class APIKey(db.Model):
     is_active = db.Column(db.Boolean, nullable=False, default=True)
     request_count = db.Column(db.Integer, nullable=False, default=0)
     last_used_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     def to_dict(self):
         return {
@@ -26,5 +26,5 @@ class APIKey(db.Model):
             'is_active': self.is_active,
             'request_count': self.request_count,
             'last_used_at': self.last_used_at.isoformat() if self.last_used_at else None,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }

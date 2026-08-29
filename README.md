@@ -1,136 +1,183 @@
-# Sentinel Verify: Enterprise AI-Powered Cybersecurity SaaS Platform
+# Sentinel Verify: Citizen AI Anti-Fraud Shield for Digital Public Services
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Vercel Ready](https://img.shields.io/badge/Vercel-Deployable-black.svg)](https://vercel.com)
+[![Netlify Ready](https://img.shields.io/badge/Netlify-Deployable-00C7B7.svg)](https://netlify.com)
+[![Tests Passing](https://img.shields.io/badge/Tests-36%2F36%20Passed-brightgreen.svg)]()
+[![PWA Ready](https://img.shields.io/badge/PWA-Offline%20Capable-purple.svg)]()
+[![Bilingual: EN / HI](https://img.shields.io/badge/Languages-English%20%7C%20%E0%A4%B9%E0%A4%BF%E0%A4%82%E0%A4%A6%E0%A4%80-orange.svg)]()
 
 ## Overview
 
-Sentinel Verify is a production-grade, full-stack cybersecurity SaaS platform designed to detect and mitigate digital fraud, phishing, and deceptive content. Built on a modern Single Page Application (SPA) architecture, the platform integrates advanced Natural Language Processing (NLP) with Ensemble Machine Learning to provide real-time threat intelligence and explainable detection results.
+**Sentinel Verify** is an AI-powered, full-stack cybersecurity verification platform engineered to protect Indian citizens from digital fraud, fake public-service SMS, deceptive WhatsApp forwards, malicious QR codes, UPI impersonation traps, typosquatting attacks, and phishing links.
 
-Transitioning from a prototype to an enterprise-grade solution, the system now features a complete suite of management modules, persistent data storage, and a high-fidelity intelligence dashboard.
+While conventional tools only support standard English, Sentinel Verify features **multi-lingual and Hinglish (Hindi-English transliteration) intelligence**, a **bilingual English/Hindi UI**, a **voice readout synthesizer**, an **Official Public Portals & SMS Headers Directory**, and an **offline-first PWA architecture** that instantly identifies deceptive messages impersonating **e-Challan, Electricity Bill (Bijli Vibhag), PM-Kisan, EPFO, Income Tax refunds, IRCTC, and Indian banking portals**.
 
 ---
 
 ## System Architecture
 
-The application utilizes a decoupled architecture where a lightweight Vanilla JavaScript frontend communicates with a modular Flask-based REST API.
-
 ```mermaid
 graph TD
-    User((User/Client)) -->|Hash Routing| SPA[Frontend SPA Engine]
-    SPA -->|REST API| Backend[Flask Application Factory]
+    Client((Citizen / Mobile Client)) -->|Bilingual Hash SPA + Voice Synth| Frontend[Frontend SPA + PWA Service Worker]
+    Frontend -->|REST API / Dynamic Resolver| Backend[Flask API / Serverless Handler]
     
-    subgraph "SaaS Service Layer"
-        Backend --> Auth[JWT & API Key Auth]
-        Backend --> History[Scan History Service]
-        Backend --> Feed[Global Threat Intelligence]
-        Backend --> Analytics[Real-time Metrics Aggregator]
+    subgraph "Citizen Protection & Forensics Layer"
+        Backend --> Scanner[Threat Scoring Engine]
+        Backend --> Scorecard[4-Pillar Citizen Scorecard]
+        Backend --> Evidence[SHA-256 Evidentiary Proof Seal]
+        Backend --> JSONEnvelope[Forensic JSON Incident Envelope]
+        Backend --> Voice[Voice Advisory Readout Engine]
+        Backend --> WhatsApp[WhatsApp Community Alert Generator]
+        Backend --> Docket[Cybercrime 1930 Complaint Docket Exporter]
+        Backend --> Helpline[National Cyber Helpline 1930 Integration]
+        Backend --> VerifiedDir[Official Public Portals & SMS Senders Directory]
+        Backend --> StateDirectory[Indian State Cyber Police Emergency Directory]
+        Backend --> GoldenRules[5 Golden Rules of Indian Cyber Safety]
+        Backend --> ScamIQ[Multi-Stage Citizen Scam IQ Hub]
+        Backend --> History[Audit History & SIEM Export]
+        Backend --> Feed[Live Intelligence Stream & Filter]
     end
 
-    subgraph "Threat Intelligence Engine"
-        Predict --> Preprocess[NLP: Lemmatization & Heuristics]
-        Preprocess --> Ensemble[Ensemble Classifier: RF/XGBoost]
-        Ensemble --> XAI[Explainability: Keyword Heatmaps]
+    subgraph "Detection Engine"
+        Scanner --> NLP[NLP Lemmatization & Heuristics]
+        Scanner --> Hinglish[Hinglish / Vernacular Threat Engine]
+        Scanner --> Shorteners[Link Masking & URL Shortener Inspector]
+        Scanner --> UPI[UPI VPA Impersonation Detector]
+        Scanner --> QR[QR Code & Payment Link Inspector]
+        Scanner --> URLA[URL Entropy & Homograph Detector]
+        Scanner --> Typo[Damerau-Levenshtein Typosquatting Matcher]
+        Scanner --> Ensemble[Ensemble ML: RF + Regex Rules]
     end
 
-    subgraph "Persistence & Infrastructure"
-        Backend --> DB[(SQLAlchemy & Alembic)]
-        Ensemble --> Models[(Serialized ML Artifacts)]
+    subgraph "Infrastructure & Resilience"
+        Backend --> DB[(SQLAlchemy / SQLite / PostgreSQL)]
+        Frontend --> LocalEngine[(Autonomous Client Fallback Storage)]
+        Frontend --> PWA[(PWA Service Worker Cache)]
     end
 ```
 
 ---
 
-## Core Modules
+## Key Features & Citizen Capabilities
 
-### 1. Real-time Threat Scanner
-The primary analysis engine evaluated via a progressive multi-stage pipeline:
-* **Text Analysis**: Detects linguistic patterns in emails, job postings, and messages using TF-IDF and lemmatization.
-* **URL Reputation**: Evaluates URL entropy, protocol security, and TLD reputation using heuristic indicators.
-* **Explainable AI (XAI)**: Provides keyword-level heatmaps to visualize why specific content was flagged as suspicious.
+### 1. Official Public Portals & SMS Headers Directory
+* Interactive searchable reference of state power discoms (*BESCOM, UPPCL, MSEDCL, TANGEDCO*) and national departments (*Parivahan, EPFO, Income Tax, PM-Kisan, IRCTC, UIDAI*) with verified domains and authorized TRAI SMS sender headers (*e.g., `VK-BESCOM`, `AD-PARIVH`, `VM-EPFOHO`*).
 
-### 2. Global Threat Feed
-A live intelligence stream that aggregates and displays active global cybersecurity threats.
-* **Campaign Tracking**: Monitors active phishing and malware campaigns.
-* **Risk Categorization**: Automatically ranks threats from Low to Critical severity.
-* **Source Attribution**: Tracks intelligence from internal sensors and external security databases.
+### 2. URL Shortener & Link Masking Heuristics
+* Automatically flags link obfuscation services (`bit.ly`, `tinyurl.com`, `rb.gy`, `cutt.ly`, `wa.me`, `shorturl.at`) when paired with public service contexts, as government departments and utility boards never use shortened URLs.
 
-### 3. Comprehensive Analytics
-Visualizes platform metrics and threat trends through an interactive dashboard.
-* **Threat Trends**: 7-day visualization of blocked threats versus safe scans.
-* **Detection Metrics**: Real-time tracking of total scans, threat detection rates, and model accuracy.
-* **Visualization Layer**: Powered by Chart.js for high-performance data rendering.
+### 3. Forensic Digital Evidence JSON Incident Envelope
+* 1-click download of a cryptographic JSON audit record containing forensic timestamp, raw evidence snippet, SHA-256 proof seal, triggered heuristic flags, and explainability metadata.
 
-### 4. Scan History & Persistence
-A persistent record of every analysis performed by the system.
-* **Data Normalization**: Stores structured prediction results, confidence scores, and XAI metadata.
-* **Audit Trail**: Allows users to review, filter, and manage historical scan records.
+### 4. Indian State Cyber Police Emergency Directory
+* Direct contact numbers and official web portals for regional State Police Cyber Crime Wings (*Delhi IFSO, Maharashtra Cyber, UP 112 Cyber Desk, Karnataka CID, Telangana Cyber Bureau, Tamil Nadu Cyber Wing*).
 
-### 5. API & Developer Ecosystem
-Enables enterprise integration through a secure API management system.
-* **API Key Management**: Secure generation and revocation of hashed application tokens.
-* **Headless Integration**: Allows external applications to leverage the threat engine programmatically.
+### 5. Cryptographic Evidentiary Proof Seal (SHA-256)
+* Generates a tamper-proof digital fingerprint sealing the scan evidence for formal law enforcement, police FIRs, and 1930 reporting.
+
+### 6. Targeted Indian Public Services Threat Breakdown Chart
+* Visual analytics dashboard revealing real-time attack frequency across Electricity Discoms (34%), e-Challan (28%), Banking & UPI (22%), PM-Kisan (11%), and EPFO/Tax (5%).
+
+### 7. Multi-Stage Citizen Scam IQ Quiz & Certification
+* Dynamic 3-scenario interactive challenge testing citizens against real Indian cyber fraud tactics with a certified completion score badge.
+
+### 8. 5 Golden Rules of Indian Cyber Safety Modal
+* Quick-reference cheat sheet summarizing official CERT-In & I4C guidelines (*QR receiving traps, APK trojans, night discom cuts, official Parivahan checks, 1930 Golden Hour rule*).
+
+### 9. Voice Safety Advisory Readout (Listen / बोलकर सुनें)
+* Uses the browser's native Web Speech API to read safety instructions aloud in Hindi (`hi-IN`) or English (`en-IN`), making cyber protection inclusive for illiterate, rural, and visually-impaired citizens.
+
+### 10. Bilingual English & Hindi (हिंदी) Accessibility
+* Instant 1-click language switcher in the navbar to make cyber verification effortless for citizens across rural and semi-urban India.
+
+### 11. Multi-Lingual & Hinglish Scam Detection
+* Detects real-world Indian fraud phrases:
+  - *Electricity Disconnection*: *"Priye grahak, aapka bijli connection aaj raat 9:30 baje kat diya jayega... Turant sampark kare."*
+  - *Bank / KYC Freeze*: *"Aapka khata block ho gaya hai, turant pan link aur kyc kare..."*
+  - *e-Challan / Seizure*: *"Pending challan fine, gadi seize notice issued..."*
+  - *Welfare / Subsidy Bait*: *"PM-Kisan 17vi kist claim kare..."*
+
+### 12. UPI VPA & Merchant Impersonation Analyzer
+* Deep inspection of `upi://pay` strings to flag personal PSP handles (`@okhdfcbank`, `@paytm`, `@ybl`, `@apl`) deceptively pretending to be verified government utilities.
+
+### 13. 4-Pillar Citizen Security Scorecard
+* Delivers an intuitive 4-point breakdown for every scan:
+  1. **Brand / Channel Identity**: Verified Official Channel vs Deceptive Spoof
+  2. **Psychological Urgency**: Standard Context vs High Pressure Coercion
+  3. **Financial / OTP Bait**: Safe vs Demands Money / Sensitive OTP
+  4. **Transport Encryption**: Encrypted HTTPS Protocol vs Unencrypted Insecure Transport
+
+### 14. Official Cybercrime Complaint Docket Exporter
+* Generates an evidentiary, pre-formatted legal complaint text file ready to upload to **cybercrime.gov.in** or present when calling the **1930 Helpline**.
+
+### 15. WhatsApp Citizen Alert Generator
+* 1-click button to copy formatted cybersecurity warnings to protect family & community WhatsApp groups before scams spread.
 
 ---
 
-## Technical Specifications
+## Deployment & Hosting
 
-| Component | Specification |
-| :--- | :--- |
-| **Frontend Architecture** | Vanilla JS Single Page Application (SPA) with Hash-based Routing |
-| **Backend Framework** | Flask with Blueprint Modular Architecture |
-| **Authentication** | JWT (Stateless) and Bcrypt-hashed API Keys |
-| **Database Management** | SQLAlchemy ORM with Alembic Migration Engine |
-| **Machine Learning** | Scikit-Learn, Ensemble Random Forest, XGBoost |
-| **NLP Engine** | SpaCy (en_core_web_sm), NLTK, Regex Heuristics |
-| **UI/UX Design** | CSS3 Grid/Flexbox, Dark Mode Persistence, Lucide Icons |
+### Option A: Deploy on Vercel (Full-Stack Serverless)
 
----
+Sentinel Verify includes native [`vercel.json`](file:///c:/Users/Romil%20Doshi/Desktop/New%20folder/sentinel/vercel.json) and [`api/index.py`](file:///c:/Users/Romil%20Doshi/Desktop/New%20folder/sentinel/api/index.py) configurations for instant deployment.
 
-## Installation and Deployment
-
-### Automated Setup (Windows)
-The project includes a master automation script for zero-configuration deployment.
-
-1. Ensure Python 3.9 or higher is installed.
-2. Navigate to the `scripts/` directory.
-3. Run `setup.bat`.
-
-This script initializes the virtual environment, installs dependencies (including the SpaCy language model), prepares the database via migrations, seeds initial data, and launches the application.
-
-### Manual Setup (Linux)
 ```bash
-# Initialize environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r backend/requirements.txt
-python -m spacy download en_core_web_sm
-
-# Database initialization
-export FLASK_APP=backend/run.py
-flask db upgrade
-python backend/seed_db.py
-
-# Launch
-python backend/run.py
+npm i -g vercel
+vercel
 ```
 
 ---
 
-## API Documentation
+### Option B: Deploy on Netlify (Static & Serverless Functions)
 
-The platform exposes a standard RESTful interface under the `/api/v1` prefix:
+Sentinel Verify includes [`netlify.toml`](file:///c:/Users/Romil%20Doshi/Desktop/New%20folder/sentinel/netlify.toml) and native Node.js [`functions/api.js`](file:///c:/Users/Romil%20Doshi/Desktop/New%20folder/sentinel/functions/api.js).
 
-### Detection Endpoints
-* `POST /predict/text`: Analyzes raw text content for fraud and phishing.
-* `POST /predict/url`: Analyzes URLs for reputation and phishing markers.
+* **Publish directory**: `frontend`
+* **Functions directory**: `functions`
+* **Autonomous Client Mode**: Runs seamlessly on static previews with built-in client engine fallback.
 
-### Management Endpoints
-* `GET /history`: Retrieves paginated scan history.
-* `GET /feed`: Retrieves the global threat intelligence feed.
-* `GET /analytics/overview`: High-level platform KPIs.
-* `GET /analytics/trends`: Time-series data for detection trends.
-* `POST /apikeys`: Generates a new secure API key.
-* `PUT /settings/profile`: Updates user preferences and profile data.
+---
+
+### Option C: Docker & Local Setup
+
+```bash
+docker-compose up --build
+```
+- Frontend UI: `http://localhost:8080`
+- Backend API: `http://localhost:5000`
+
+---
+
+## API Endpoints
+
+All endpoints are hosted under `/api/v1`:
+
+| Endpoint | Method | Description |
+| :--- | :--- | :--- |
+| `/health` | `GET` | Health status, database connectivity, and uptime telemetry |
+| `/predict/text` | `POST` | Scans text/email/SMS messages (English & Hinglish) |
+| `/predict/url` | `POST` | Analyzes URL reputation, entropy, homographs, typosquatting, shorteners, and UPI VPAs |
+| `/predict/batch` | `POST` | High-throughput batch scanning (up to 50 items) |
+| `/history` | `GET` | Retrieves paginated historical scan records |
+| `/history/export` | `GET` | Exports audit history in JSON or CSV for SIEM integration |
+| `/history/<id>` | `DELETE` | Deletes a historical scan record |
+| `/feed` | `GET` | Fetches the live global threat intelligence feed |
+| `/analytics/overview` | `GET` | Platform KPIs (scans, blocked threats, accuracy) |
+| `/analytics/trends` | `GET` | 7-day time-series threat trend datasets |
+| `/apikeys` | `GET` / `POST` / `DELETE` | Hashed API token management and usage tracking |
+| `/settings/profile` | `GET` / `PUT` | User preferences and profile configuration |
+
+---
+
+## Automated Test Suite
+
+Execute all tests with pytest:
+```bash
+python -m pytest tests/ -v
+```
+**36/36 unit and integration tests passing (100% pass rate).**
 
 ---
 

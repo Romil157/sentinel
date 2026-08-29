@@ -1,19 +1,27 @@
 from flask import Blueprint, jsonify
 from app import db
+from sqlalchemy import text
+import datetime
 
 health_bp = Blueprint('health', __name__)
+START_TIME = datetime.datetime.now(datetime.timezone.utc)
 
+@health_bp.route('/', methods=['GET'])
 @health_bp.route('/health', methods=['GET'])
 def health_check():
-    # Check DB connection
-    db_status = "ok"
+    db_status = "connected"
     try:
-        db.session.execute('SELECT 1')
+        db.session.execute(text('SELECT 1'))
     except Exception as e:
-        db_status = "error"
+        db_status = f"unavailable ({str(e)[:40]})"
+
+    uptime_seconds = int((datetime.datetime.now(datetime.timezone.utc) - START_TIME).total_seconds())
 
     return jsonify({
-        "status": "ok",
-        "service": "Sentinel Verify API",
-        "database": db_status
+        "status": "healthy",
+        "service": "Sentinel Verify Intelligence Engine",
+        "version": "2.0.0",
+        "database": db_status,
+        "uptime_seconds": uptime_seconds,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }), 200

@@ -46,14 +46,20 @@
     --sev-critical-border: #991b1b;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     transition: background-color 0.3s, color 0.3s;
 }
+
 
 /* Layout */
 .app-container {
@@ -64,6 +70,9 @@ body {
 
 .sidebar {
     width: 260px;
+    min-width: 250px;
+    flex-shrink: 0;
+    box-sizing: border-box;
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border-color);
     display: flex;
@@ -71,6 +80,7 @@ body {
     padding: 1.5rem;
     transition: background-color 0.3s, border-color 0.3s;
 }
+
 
 .main-content {
     flex: 1;
@@ -114,8 +124,23 @@ body {
     background-color: rgba(255,255,255,0.05);
 }
 
+/* Layout & Grid Helpers */
+.row {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+.col-lg-6, .col-12 {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+
 /* Cards & Containers */
 .saas-card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -123,18 +148,48 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     margin-bottom: 1.5rem;
     transition: background-color 0.3s, border-color 0.3s;
+    overflow: hidden;
 }
 
+
 /* Forms */
+#textInputWrapper, #urlInputWrapper, #qrInputWrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
+    position: relative;
+}
+
 .saas-input {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     border-radius: 8px;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
+    font-family: inherit;
     transition: all 0.2s;
+    display: block;
 }
+
+textarea.saas-input {
+    resize: vertical;
+    min-height: 140px;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    line-height: 1.5;
+}
+
+
+
 
 .saas-input:focus {
     outline: none;
@@ -325,3 +380,178 @@ body {
 [data-theme="dark"] .btn-icon:hover {
     background-color: rgba(255,255,255,0.1);
 }
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        overflow-y: auto;
+    }
+    .sidebar {
+        width: 100%;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .main-content {
+        padding: 1.25rem;
+    }
+}
+
+/* Quick Chips & Export Actions */
+.badge-chip {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+}
+.badge-chip:hover {
+    background-color: rgba(0,0,0,0.06);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+[data-theme="dark"] .badge-chip:hover {
+    background-color: rgba(255,255,255,0.08);
+}
+.btn-outline-custom {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.btn-outline-custom:hover {
+    background-color: var(--bg-sidebar);
+    border-color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   MODAL COMPONENT STYLES
+   ========================================================================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1055;
+    overflow-x: hidden;
+    overflow-y: auto;
+    outline: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-sizing: border-box;
+}
+
+.modal.show {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-dialog {
+    position: relative;
+    width: 92%;
+    max-width: 580px;
+    margin: 1.75rem auto;
+    pointer-events: auto;
+}
+
+.modal-dialog.modal-lg {
+    max-width: 820px;
+}
+
+.modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    outline: 0;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-title {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1.25rem;
+    max-height: calc(85vh - 120px);
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+
+.btn-close {
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.btn-close::before {
+    content: "x";
+    font-family: inherit;
+    font-weight: 300;
+}
+
+.btn-close:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .btn-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+

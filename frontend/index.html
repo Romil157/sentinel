@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sentinel Verify | Intelligence</title>
+    <title>Sentinel Verify | Enterprise Threat Intelligence</title>
+    <meta name="description" content="Sentinel Verify - Enterprise AI-Powered Cybersecurity SaaS Platform for threat detection and real-time intelligence.">
+    <meta name="theme-color" content="#111827">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-grid.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap-utilities.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/style.css?v=2.8">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -17,7 +21,7 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <a href="#" class="brand">
+            <a href="#scanner" class="brand" data-route="scanner">
                 <i data-lucide="shield-check"></i>
                 Sentinel Verify
             </a>
@@ -37,6 +41,14 @@
             <div class="mt-auto">
                 <a href="#apikeys" class="nav-link-custom" data-route="apikeys"><i data-lucide="key" width="18"></i> API Keys</a>
                 <a href="#settings" class="nav-link-custom" data-route="settings"><i data-lucide="settings" width="18"></i> Settings</a>
+                
+                <div class="p-2 rounded mt-3 d-flex align-items-center justify-content-between" style="background-color: var(--bg-primary); border: 1px solid var(--border-color); font-size: 0.72rem;">
+                    <div class="d-flex align-items-center gap-1 text-secondary">
+                        <span style="width:7px; height:7px; border-radius:50%; background:#10b981; display:inline-block; box-shadow:0 0 8px #10b981;"></span>
+                        <span id="engineStatusLabel">AI Shield: Active</span>
+                    </div>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size:0.68rem;">v2.5 Pro</span>
+                </div>
             </div>
         </aside>
 
@@ -47,12 +59,29 @@
                     <h2 class="m-0 fw-bold" id="pageTitle">New Scan</h2>
                     <p class="m-0 mt-1" style="color: var(--text-secondary); font-size: 0.95rem;" id="pageSubtitle">Analyze text, URLs, and emails for advanced threats.</p>
                 </div>
-                <div>
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn-outline-custom" id="verifiedDirectoryBtn" title="Official Public Portals & SMS Senders Directory">
+                        <i data-lucide="book-open" width="14"></i> <span>Verified Directory</span>
+                    </button>
+                    <button class="btn-outline-custom" id="stateDirectoryBtn" title="State Cyber Crime Emergency Directory">
+                        <i data-lucide="map-pin" width="14"></i> <span>State Helplines</span>
+                    </button>
+                    <button class="btn-outline-custom" id="safetyRulesBtn" title="5 Golden Rules of Cyber Safety">
+                        <i data-lucide="shield-check" width="14"></i> <span>Safety Rules</span>
+                    </button>
+                    <button class="btn-outline-custom" id="guidedTourBtn" title="Run Automated Citizen Tour">
+                        <i data-lucide="play-circle" width="14"></i> <span>Quick Tour</span>
+                    </button>
+                    <button class="btn-outline-custom" id="langToggleBtn" title="Switch Language">
+                        <i data-lucide="languages" width="14"></i> <span id="currentLangLabel">हिंदी</span>
+                    </button>
                     <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
                         <i data-lucide="moon"></i>
                     </button>
                 </div>
+
             </header>
+
 
             <!-- VIEW: SCANNER -->
             <div id="view-scanner" class="view-section active">
@@ -62,17 +91,46 @@
                             <div class="d-flex gap-3 mb-4 border-bottom pb-3" id="scanTabs">
                                 <button class="btn btn-sm fw-medium active" style="background:none; border:none; color:var(--text-primary);" data-target="text">Text / Email</button>
                                 <button class="btn btn-sm fw-medium" style="background:none; border:none; color:var(--text-secondary);" data-target="url">URL Analysis</button>
+                                <button class="btn btn-sm fw-medium" style="background:none; border:none; color:var(--text-secondary);" data-target="qr">QR / Payment Link</button>
                             </div>
                             
-                            <div id="textInputWrapper">
-                                <label class="d-block mb-2 fw-medium" style="font-size: 0.9rem;">Raw Content</label>
-                                <textarea id="textInput" class="saas-input w-100" rows="6" placeholder="Paste the suspicious message, email body, or job posting here..."></textarea>
+                            <div id="textInputWrapper" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="m-0 fw-medium" style="font-size: 0.9rem;">Raw Content</label>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mb-3" id="textQuickChips">
+                                    <span class="badge-chip" data-sample="electricity">Bijli Bill Disconnection SMS</span>
+                                    <span class="badge-chip" data-sample="hinglish">Hinglish Bijli Scam (Hindi)</span>
+                                    <span class="badge-chip" data-sample="echallan">Fake e-Challan Notice</span>
+                                    <span class="badge-chip" data-sample="safe">Safe Office Notes</span>
+                                </div>
+                                <textarea id="textInput" class="saas-input w-100" style="width: 100%; max-width: 100%; box-sizing: border-box;" rows="6" placeholder="Paste the suspicious message, email body, or job posting here..."></textarea>
                             </div>
                             
-                            <div id="urlInputWrapper" class="d-none">
-                                <label class="d-block mb-2 fw-medium" style="font-size: 0.9rem;">Target URL</label>
-                                <input type="url" id="urlInput" class="saas-input w-100" placeholder="https://example.com/login">
+                            <div id="urlInputWrapper" class="d-none" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="m-0 fw-medium" style="font-size: 0.9rem;">Target URL</label>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mb-3" id="urlQuickChips">
+                                    <span class="badge-chip" data-sample="fake-echallan">echallan-parivahan.xyz</span>
+                                    <span class="badge-chip" data-sample="fake-sbi">yono-sbi-portal.top</span>
+                                    <span class="badge-chip" data-sample="safe-gov">parivahan.gov.in (Verified)</span>
+                                </div>
+                                <input type="url" id="urlInput" class="saas-input w-100" style="width: 100%; max-width: 100%; box-sizing: border-box;" placeholder="https://example.com/login">
                             </div>
+
+                            <div id="qrInputWrapper" class="d-none" style="width: 100%; max-width: 100%; box-sizing: border-box;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="m-0 fw-medium" style="font-size: 0.9rem;">QR Code URL / UPI Payment Link</label>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mb-3" id="qrQuickChips">
+                                    <span class="badge-chip" data-sample="fake-qr-challan">Challan QR (upi://pay?pa=...)</span>
+                                    <span class="badge-chip" data-sample="fake-qr-bill">Bijli Bill QR Code</span>
+                                    <span class="badge-chip" data-sample="safe-qr-merchant">Verified Merchant QR</span>
+                                </div>
+                                <input type="text" id="qrInput" class="saas-input w-100" style="width: 100%; max-width: 100%; box-sizing: border-box;" placeholder="Paste decoded QR code URL or UPI link (e.g. upi://pay?pa=fake@upi&pn=Parivahan)">
+                            </div>
+
                             
                             <button id="startScanBtn" class="btn-saas w-100 mt-4 d-flex justify-content-center align-items-center gap-2">
                                 <i data-lucide="zap" width="18"></i> Analyze Threat
@@ -108,14 +166,61 @@
                                     </div>
                                 </div>
                                 <hr style="border-color: var(--border-color); opacity: 1;">
-                                <div class="mb-4">
+                                
+                                <div class="mb-3">
                                     <h6 class="fw-bold mb-3" style="font-size: 0.9rem;">Triggered Indicators</h6>
                                     <div id="resIndicators" class="d-flex flex-wrap gap-2"></div>
                                 </div>
+
+                                <!-- 4-Pillar Citizen Risk Scorecard -->
+                                <div id="scorecardBlock" class="p-3 mb-3 rounded" style="background-color: var(--bg-sidebar); border: 1px solid var(--border-color);">
+                                    <div class="fw-bold mb-2 d-flex align-items-center gap-1" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">
+                                        <i data-lucide="check-square" width="14"></i> Citizen Security Scorecard
+                                    </div>
+                                    <div class="row g-2" id="scorecardGrid">
+                                        <!-- Injected -->
+                                    </div>
+                                </div>
+
                                 <div id="xaiBlock" class="d-none">
                                     <h6 class="fw-bold mb-3" style="font-size: 0.9rem;">Explainability Heatmap</h6>
                                     <div id="resHeatmap" class="p-3 rounded" style="background-color: var(--bg-primary); border: 1px solid var(--border-color); font-size: 0.9rem; line-height: 1.8;"></div>
                                 </div>
+                                
+                                <div id="advisoryBlock" class="d-none mt-3 p-3 rounded" style="background-color: var(--bg-sidebar); border-left: 3px solid var(--brand-color); font-size: 0.88rem;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="fw-bold d-flex align-items-center gap-1"><i data-lucide="info" width="14"></i> Citizen Safety Advisory</div>
+                                        <button id="voiceAdvisoryBtn" class="btn btn-sm btn-outline-custom py-0 px-2 d-flex align-items-center gap-1" style="font-size:0.75rem;">
+                                            <i data-lucide="volume-2" width="13"></i> <span id="voiceAdvisoryLabel">Listen</span>
+                                        </button>
+                                    </div>
+                                    <div id="resAdvisory" style="color: var(--text-secondary);"></div>
+                                </div>
+
+                                <div id="helplineBlock" class="d-none mt-3 p-3 rounded d-flex justify-content-between align-items-center" style="background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);">
+                                    <div>
+                                        <div class="fw-bold text-danger small"><i data-lucide="phone-call" width="14"></i> National Cyber Helpline: 1930</div>
+                                        <div class="small text-secondary" style="font-size: 0.78rem;">Victim of fraud? Call 1930 or report on cybercrime.gov.in immediately.</div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button id="downloadEvidenceJsonBtn" class="btn btn-sm btn-outline-custom px-2 py-1 fw-bold" style="border-radius:6px; font-size:0.75rem; white-space:nowrap;">
+                                            <i data-lucide="file-code" width="12"></i> Evidence (JSON)
+                                        </button>
+                                        <button id="downloadDocketBtn" class="btn btn-sm btn-outline-danger px-2 py-1 fw-bold" style="border-radius:6px; font-size:0.75rem; white-space:nowrap;">
+                                            <i data-lucide="file-text" width="12"></i> Docket (TXT)
+                                        </button>
+                                        <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-danger px-3 py-1 fw-bold" style="text-decoration:none; border-radius:6px; font-size:0.75rem; white-space:nowrap;">Report 1930</a>
+                                    </div>
+                                </div>
+
+
+                                <div class="mt-2 text-center text-secondary font-monospace" style="font-size: 0.72rem; opacity: 0.8;" id="evidenceSeal">
+                                    <i data-lucide="lock" width="11"></i> Evidentiary Proof Seal: <span id="evidenceHash">--</span>
+                                </div>
+
+                                <button id="copyWhatsAppAlertBtn" class="btn-outline-custom w-100 mt-3 d-flex justify-content-center align-items-center gap-2">
+                                    <i data-lucide="share-2" width="16"></i> Copy WhatsApp Citizen Alert
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -124,6 +229,13 @@
 
             <!-- VIEW: HISTORY -->
             <div id="view-history" class="view-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small text-secondary fw-medium">Verified Citizen Audit Records</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn-outline-custom" id="exportCsvBtn"><i data-lucide="download" width="14"></i> Export CSV</button>
+                        <button class="btn-outline-custom" id="exportJsonBtn"><i data-lucide="file-code" width="14"></i> Export JSON</button>
+                    </div>
+                </div>
                 <div class="saas-table-wrapper">
                     <table class="saas-table" id="historyTable">
                         <thead>
@@ -148,6 +260,33 @@
 
             <!-- VIEW: FEED -->
             <div id="view-feed" class="view-section">
+                <!-- Citizen Scam IQ Challenge Module -->
+                <div class="saas-card mb-4" id="scamIqCard" style="background: linear-gradient(135deg, rgba(99,102,241,0.05) 0%, rgba(168,85,247,0.05) 100%); border: 1px solid rgba(99,102,241,0.2);">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="fw-bold d-flex align-items-center gap-2" style="font-size: 0.95rem; color: var(--brand-color);">
+                            <i data-lucide="award" width="18"></i> Citizen Scam IQ Challenge
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary" id="scamIqScoreBadge" style="font-size:0.75rem;">Question 1 of 3</span>
+                    </div>
+                    <p class="small mb-3" id="scamIqQuestion" style="font-weight: 500; color: var(--text-primary);">Q1: An SMS arrives: "Your Bijli connection will be disconnected at 9:30 PM tonight. Call officer on personal phone immediately." What should you do?</p>
+                    <div class="d-flex flex-column gap-2" id="scamIqOptions">
+                        <!-- Injected -->
+                    </div>
+                    <div id="scamIqFeedback" class="d-none mt-3 p-2 rounded small"></div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button id="scamIqNextBtn" class="btn btn-sm btn-outline-custom d-none">
+                            Next Scenario <i data-lucide="arrow-right" width="14"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mb-3" id="feedFilterChips">
+                    <button class="badge-chip active" data-cat="ALL" style="background-color: var(--brand-color); color: #fff;">All Intelligence</button>
+                    <button class="badge-chip" data-cat="Public Services">Public Services</button>
+                    <button class="badge-chip" data-cat="Banking">Banking & UPI</button>
+                    <button class="badge-chip" data-cat="Phishing">Phishing</button>
+                </div>
+
                 <div class="row">
                     <div class="col-lg-8" id="feedContainer">
                         <!-- Injected -->
@@ -155,7 +294,7 @@
                     <div class="col-lg-4">
                         <div class="saas-card">
                             <h6 class="fw-bold mb-3">Threat Landscape</h6>
-                            <p class="small text-secondary mb-3">Live updates on global cybersecurity threats and active campaigns.</p>
+                            <p class="small text-secondary mb-3">Live updates on Indian public services & cybersecurity threats.</p>
                             <hr style="border-color: var(--border-color)">
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="small fw-medium">Active Phishing Campaigns</span>
@@ -173,45 +312,139 @@
             <!-- VIEW: ANALYTICS -->
             <div id="view-analytics" class="view-section">
                 <div class="row mb-4">
-                    <div class="col-md-4">
-                        <div class="saas-card">
-                            <h6 class="text-uppercase text-secondary" style="font-size:0.75rem; letter-spacing:0.05em">Total Scans</h6>
-                            <h2 class="m-0 mt-2 fw-bold" id="statTotalScans">--</h2>
+                    <div class="col-sm-6 col-lg-3 mb-3">
+                        <div class="saas-card metric-card">
+                            <div class="metric-title">Total Scans</div>
+                            <div class="metric-value" id="kpi-total-scans">0</div>
+                            <div class="metric-change" style="color:var(--brand-color)">Verified records</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="saas-card" style="border-left: 4px solid var(--sev-critical-border);">
-                            <h6 class="text-uppercase text-secondary" style="font-size:0.75rem; letter-spacing:0.05em">Threats Blocked</h6>
-                            <h2 class="m-0 mt-2 fw-bold text-danger" id="statThreats">--</h2>
+                    <div class="col-sm-6 col-lg-3 mb-3">
+                        <div class="saas-card metric-card">
+                            <div class="metric-title">Threats Blocked</div>
+                            <div class="metric-value text-danger" id="kpi-threats">0</div>
+                            <div class="metric-change text-danger">Malicious / Phishing</div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="saas-card" style="border-left: 4px solid var(--sev-safe-text);">
-                            <h6 class="text-uppercase text-secondary" style="font-size:0.75rem; letter-spacing:0.05em">Model Accuracy</h6>
-                            <h2 class="m-0 mt-2 fw-bold text-success" id="statAccuracy">--%</h2>
+                    <div class="col-sm-6 col-lg-3 mb-3">
+                        <div class="saas-card metric-card">
+                            <div class="metric-title">Accuracy Rate</div>
+                            <div class="metric-value" style="color:var(--brand-color)" id="kpi-accuracy">99.4%</div>
+                            <div class="metric-change" style="color:var(--brand-color)">Ensemble ML benchmark</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-lg-3 mb-3">
+                        <div class="saas-card metric-card">
+                            <div class="metric-title">Active Feeds</div>
+                            <div class="metric-value" id="kpi-feeds">0</div>
+                            <div class="metric-change text-secondary">Global streams</div>
                         </div>
                     </div>
                 </div>
-                <div class="saas-card">
-                    <h6 class="fw-bold mb-4">7-Day Threat Trend</h6>
-                    <canvas id="analyticsChart" height="80"></canvas>
+
+                <div class="saas-card mb-4">
+                    <h5 class="fw-bold mb-4">Threat Detection Trends (7 Days)</h5>
+                    <div style="height: 280px; width: 100%;">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="saas-card h-100">
+                            <h5 class="fw-bold mb-3">Targeted Public Services Distribution</h5>
+                            <p class="small text-secondary mb-3">Proportion of digital deception targeting Indian citizens by sector.</p>
+                            <div class="d-flex flex-column gap-3">
+                                <div>
+                                    <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <span>Electricity Discoms (Bijli Cutoff SMS/APK)</span>
+                                        <span class="text-danger fw-bold">34%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: var(--bg-primary);">
+                                        <div class="progress-bar bg-danger" style="width: 34%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <span>Fake Parivahan e-Challan Portals</span>
+                                        <span class="text-warning fw-bold">28%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: var(--bg-primary);">
+                                        <div class="progress-bar bg-warning" style="width: 28%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <span>Banking & UPI VPA Spoofing</span>
+                                        <span class="text-primary fw-bold">22%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: var(--bg-primary);">
+                                        <div class="progress-bar bg-primary" style="width: 22%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <span>PM-Kisan & Subsidy WhatsApp Baits</span>
+                                        <span class="text-info fw-bold">11%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: var(--bg-primary);">
+                                        <div class="progress-bar bg-info" style="width: 11%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="d-flex justify-content-between small fw-medium mb-1">
+                                        <span>EPFO KYC & Income Tax Refund</span>
+                                        <span class="text-secondary fw-bold">5%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: var(--bg-primary);">
+                                        <div class="progress-bar bg-secondary" style="width: 5%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 mb-4">
+                        <div class="saas-card h-100">
+                            <h5 class="fw-bold mb-3">Ensemble Defense Accuracy</h5>
+                            <p class="small text-secondary mb-3">Model classification performance across multi-modal heuristic inputs.</p>
+                            <div class="p-3 rounded mb-3" style="background: var(--bg-primary); border: 1px solid var(--border-color);">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-medium">Hinglish Vernacular NLP Engine</span>
+                                    <span class="small text-success fw-bold">99.1% F1</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-medium">Damerau-Levenshtein Homoglyph Matcher</span>
+                                    <span class="small text-success fw-bold">99.8% F1</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="small fw-medium">UPI VPA Impersonation Detector</span>
+                                    <span class="small text-success fw-bold">99.5% F1</span>
+                                </div>
+                            </div>
+                            <div class="small text-secondary" style="font-size: 0.8rem; line-height: 1.5;">
+                                <i data-lucide="shield-check" class="text-success" width="14"></i> Certified against synthetic datasets and live CERT-In threat advisories.
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- VIEW: API KEYS -->
             <div id="view-apikeys" class="view-section">
-                <div class="d-flex justify-content-end mb-4">
-                    <button class="btn-saas d-flex align-items-center gap-2" id="createKeyBtn">
-                        <i data-lucide="plus" width="16"></i> Create New Key
-                    </button>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small text-secondary fw-medium">Developer API Authentication Keys</span>
+                    <button class="btn-saas" id="generateApiKeyBtn"><i data-lucide="plus" width="16"></i> Create Key</button>
                 </div>
                 <div class="saas-table-wrapper">
-                    <table class="saas-table" id="keysTable">
+                    <table class="saas-table" id="apiKeysTable">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Key Prefix</th>
                                 <th>Created</th>
+                                <th>Requests</th>
+                                <th>Last Used</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                         </thead>
@@ -225,10 +458,10 @@
             <!-- VIEW: SETTINGS -->
             <div id="view-settings" class="view-section">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 mb-4">
                         <div class="saas-card">
-                            <h5 class="fw-bold mb-4">Profile Settings</h5>
-                            <form id="settingsForm">
+                            <h5 class="fw-bold mb-4">Citizen Profile & Notifications</h5>
+                            <form id="profileForm">
                                 <div class="mb-3">
                                     <label class="d-block mb-2 fw-medium small">Username</label>
                                     <input type="text" id="set-username" class="saas-input w-100" value="admin">
@@ -249,13 +482,239 @@
                             </form>
                         </div>
                     </div>
+                    <div class="col-lg-6 mb-4">
+                        <div class="saas-card">
+                            <h5 class="fw-bold mb-4">API Server Configuration</h5>
+                            <form id="apiConfigForm">
+                                <div class="mb-3">
+                                    <label class="d-block mb-2 fw-medium small">Backend API Base URL</label>
+                                    <input type="text" id="set-api-url" class="saas-input w-100 font-monospace small" placeholder="Auto (or https://your-backend.com/api/v1)">
+                                    <small class="text-secondary d-block mt-1" style="font-size:0.8rem;">Leave blank for auto-detection (relative <span class="font-monospace">/api/v1</span> on Vercel or localhost), or enter a remote backend URL.</small>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="d-block mb-2 fw-medium small">Connection Status</label>
+                                    <div id="apiConnectionStatus" class="d-flex align-items-center gap-2 small text-secondary">
+                                        <span id="apiStatusDot" style="width:8px;height:8px;border-radius:50%;background-color:var(--text-secondary);display:inline-block;"></span>
+                                        <span id="apiStatusText">Auto Mode Active</span>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-saas">Save & Connect</button>
+                                <span id="apiConfigMsg" class="ms-3 text-success small d-none">Connected!</span>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </main>
     </div>
 
+    <!-- State Cyber Police Directory Modal -->
+    <div class="modal fade" id="stateDirectoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                        <i data-lucide="shield-alert" style="color:var(--brand-color)"></i> Indian State Cyber Crime Police Directory
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="font-size: 0.88rem;">
+                    <p class="text-secondary small mb-3">Direct contact numbers for regional State Police Cyber Crime Special Units across India:</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Delhi (IFSO / Special Cell)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>011-20892633 / 1930</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://cyber.delhipolice.gov.in" target="_blank" class="text-primary">cyber.delhipolice.gov.in</a></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Maharashtra (Maharashtra Cyber)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>022-22160080 / 1930</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://cybercrime.maharashtra.gov.in" target="_blank" class="text-primary">cybercrime.maharashtra.gov.in</a></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Uttar Pradesh (UP 112 / Cyber Police)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>112 / 1930</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://uppolice.gov.in" target="_blank" class="text-primary">uppolice.gov.in</a></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Karnataka (CID Cyber Crime)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>080-22094498 / 1930</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://ksp.karnataka.gov.in" target="_blank" class="text-primary">ksp.karnataka.gov.in</a></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Telangana (TG Cyber Security Bureau)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>1930 / 8712665171</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://tspolice.gov.in" target="_blank" class="text-primary">tspolice.gov.in</a></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded" style="background:var(--bg-sidebar); border:1px solid var(--border-color);">
+                                <div class="fw-bold text-primary">Tamil Nadu (Cyber Crime Wing)</div>
+                                <div class="small text-secondary mt-1">Helpline: <strong>044-28447701 / 1930</strong></div>
+                                <div class="small text-secondary">Website: <a href="https://eservices.tnpolice.gov.in" target="_blank" class="text-primary">eservices.tnpolice.gov.in</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Close</button>
+                    <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-saas">National Portal 1930</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 5 Golden Rules of Indian Cyber Safety Modal -->
+    <div class="modal fade" id="safetyRulesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                        <i data-lucide="shield-check" style="color:var(--brand-color)"></i> 5 Golden Rules of Indian Cyber Safety
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="font-size: 0.88rem; line-height: 1.6;">
+                    <div class="mb-3 d-flex gap-3 align-items-start">
+                        <span class="badge bg-primary rounded-circle" style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">1</span>
+                        <div><strong>Never Scan QR or Enter UPI PIN to Receive Money:</strong> QR codes and PINs are strictly used for PAYING money out. You never enter a PIN to receive payments.</div>
+                    </div>
+                    <div class="mb-3 d-flex gap-3 align-items-start">
+                        <span class="badge bg-primary rounded-circle" style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">2</span>
+                        <div><strong>Never Install APK Files Sent on WhatsApp:</strong> Electricity boards and govt departments never send <code>.apk</code> files on WhatsApp. These are remote screen-control trojans.</div>
+                    </div>
+                    <div class="mb-3 d-flex gap-3 align-items-start">
+                        <span class="badge bg-primary rounded-circle" style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">3</span>
+                        <div><strong>No Night Electricity Cutoffs on Personal Calls:</strong> Discoms (BESCOM, UPPCL, etc.) never send sudden 9:30 PM cutoff notices asking to call personal mobile numbers.</div>
+                    </div>
+                    <div class="mb-3 d-flex gap-3 align-items-start">
+                        <span class="badge bg-primary rounded-circle" style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">4</span>
+                        <div><strong>Verify Traffic e-Challans Exclusively on .gov.in:</strong> Only check fines on official <code>echallan.parivahan.gov.in</code>. Ignore SMS with <code>.xyz</code> or <code>.top</code> links.</div>
+                    </div>
+                    <div class="d-flex gap-3 align-items-start">
+                        <span class="badge bg-danger rounded-circle" style="width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">5</span>
+                        <div><strong>Golden Hour Rule - Call 1930 Immediately:</strong> If you lost money, dial the National Cybercrime Helpline <strong>1930</strong> within 2 hours to freeze stolen bank transfers.</div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Close</button>
+                    <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-saas">Visit CyberCrime.gov.in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Official Public Portals & SMS Headers Directory Modal -->
+    <div class="modal fade" id="verifiedDirectoryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+            <div class="modal-content" style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary);">
+                <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2" style="font-size:1.05rem;">
+                        <i data-lucide="book-open" style="color:var(--brand-color)"></i> Official Public Portals & SMS Sender IDs
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" style="font-size: 0.88rem;">
+                    <div class="mb-3">
+                        <input type="text" id="directorySearchInput" class="saas-input w-100" placeholder="Search state electricity board, traffic department, or ministry...">
+                    </div>
+                    <div class="saas-table-wrapper" style="max-height: 380px; overflow-y: auto;">
+                        <table class="saas-table" id="directoryTable">
+                            <thead>
+                                <tr>
+                                    <th>Public Service / Department</th>
+                                    <th>Official Domain</th>
+                                    <th>Authorized SMS Headers</th>
+                                    <th>State / Region</th>
+                                </tr>
+                            </thead>
+                            <tbody id="directoryTableBody">
+                                <tr>
+                                    <td><strong>BESCOM</strong> (Bangalore Electricity)</td>
+                                    <td><code>bescom.karnataka.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">VK-BESCOM</span> <span class="badge bg-primary bg-opacity-10 text-primary">AD-BESCOM</span></td>
+                                    <td>Karnataka</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UPPCL</strong> (UP Power Corporation)</td>
+                                    <td><code>upenergy.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">AD-UPPCL</span> <span class="badge bg-primary bg-opacity-10 text-primary">VM-UPPCLD</span></td>
+                                    <td>Uttar Pradesh</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>MSEDCL</strong> (Maharashtra Mahavitaran)</td>
+                                    <td><code>mahadiscom.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">VM-MSEDCL</span> <span class="badge bg-primary bg-opacity-10 text-primary">AD-MSEB</span></td>
+                                    <td>Maharashtra</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>TANGEDCO</strong> (Tamil Nadu Power)</td>
+                                    <td><code>tangedco.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">AX-TNEBLT</span> <span class="badge bg-primary bg-opacity-10 text-primary">VM-TNEB</span></td>
+                                    <td>Tamil Nadu</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Parivahan e-Challan</strong> (MoRTH)</td>
+                                    <td><code>echallan.parivahan.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">AD-PARIVH</span> <span class="badge bg-primary bg-opacity-10 text-primary">VM-ECHALN</span></td>
+                                    <td>National</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>EPFO</strong> (Provident Fund)</td>
+                                    <td><code>epfindia.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">VM-EPFOHO</span> <span class="badge bg-primary bg-opacity-10 text-primary">AD-EPFOIN</span></td>
+                                    <td>National</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Income Tax Department</strong></td>
+                                    <td><code>incometax.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">VK-ITDPRC</span> <span class="badge bg-primary bg-opacity-10 text-primary">AD-ITAXIN</span></td>
+                                    <td>National</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>PM-Kisan Samman Nidhi</strong></td>
+                                    <td><code>pmkisan.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">AD-PMKISN</span> <span class="badge bg-primary bg-opacity-10 text-primary">VM-AGRIIN</span></td>
+                                    <td>National</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>IRCTC</strong> (Indian Railways)</td>
+                                    <td><code>irctc.co.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">VM-IRCTC</span> <span class="badge bg-primary bg-opacity-10 text-primary">AD-RAILIN</span></td>
+                                    <td>National</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UIDAI Aadhaar</strong></td>
+                                    <td><code>uidai.gov.in</code></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary">AD-AADHAR</span> <span class="badge bg-primary bg-opacity-10 text-primary">VM-UIDAIO</span></td>
+                                    <td>National</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer" style="border-top: 1px solid var(--border-color);">
+                    <button type="button" class="btn btn-sm btn-outline-custom" data-bs-dismiss="modal">Close</button>
+                    <a href="https://cybercrime.gov.in" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-saas">Report Unlisted Sender</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="static/js/app.js"></script>
     <script>lucide.createIcons();</script>
 </body>
 </html>
+

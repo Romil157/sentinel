@@ -8,11 +8,11 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     role = db.Column(db.String(50), nullable=False, default='user')
     
     # Settings
-    theme_preference = db.Column(db.String(20), nullable=False, default='light') # 'light', 'dark', 'system'
+    theme_preference = db.Column(db.String(20), nullable=False, default='light')
     notifications_enabled = db.Column(db.Boolean, nullable=False, default=True)
     
     # Relationships
@@ -36,5 +36,5 @@ class User(db.Model):
             'role': self.role,
             'theme_preference': self.theme_preference,
             'notifications_enabled': self.notifications_enabled,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }
